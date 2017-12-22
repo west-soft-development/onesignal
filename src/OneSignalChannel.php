@@ -33,6 +33,17 @@ class OneSignalChannel
 
         $payload = $notification->toOneSignal($notifiable)->toArray();
         $payload['include_player_ids'] = collect($userIds);
+        
+        // if badge is set as data, include it in the request
+        if (isset($payload['data']['badge']) && is_array($payload['data']['badge'])) {
+            if (isset($payload['data']['badge']['type'])) {
+                $payload['ios_badgeType'] = $payload['data']['badge']['type'];
+            }
+
+            if (isset($payload['data']['badge']['type'])) {
+                $payload['ios_badgeCount'] = $payload['data']['badge']['count'];
+            }
+        }
 
         /** @var ResponseInterface $response */
         $response = $this->oneSignal->sendNotificationCustom($payload);
